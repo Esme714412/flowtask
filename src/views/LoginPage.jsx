@@ -2,9 +2,12 @@ import { supabase } from '../lib/supabase'
 
 export default function LoginPage() {
   const handleGoogleLogin = async () => {
+    const redirectTo = import.meta.env.PROD
+      ? 'https://Esme714412.github.io/flowtask/'
+      : 'http://localhost:5173/flowtask/'
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/flowtask/' },
+      options: { redirectTo },
     })
   }
 
