@@ -95,7 +95,7 @@ export default function TaskList({ onNewTask, onEditTask, session, profile, onPr
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>任務清單</h1>
         <button onClick={onNewTask}
-          className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white text-sm px-4 py-2 rounded-lg transition">
+          className="flex items-center gap-2 btn-primary text-sm px-4 py-2 rounded-lg transition">
           + 新增任務
         </button>
       </div>

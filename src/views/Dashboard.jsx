@@ -96,7 +96,7 @@ export default function Dashboard({ onNewTask, onEditTask, session, profile, onP
           </p>
         </div>
         <button onClick={onNewTask}
-          className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white text-sm px-4 py-2 rounded-lg transition">
+          className="flex items-center gap-2 btn-primary text-sm px-4 py-2 rounded-lg transition">
           + 新增任務
         </button>
       </div>

@@ -79,7 +79,7 @@ export default function RewardsView({ session, profile, onProfileUpdate }) {
         </div>
         {tab === 'rewards' && (
           <button onClick={() => setAdding(v => !v)}
-            className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white text-sm px-4 py-2 rounded-lg transition">
+            className="flex items-center gap-2 btn-primary text-sm px-4 py-2 rounded-lg transition">
             {adding ? '取消' : '+ 新增獎勵'}
           </button>
         )}
@@ -111,7 +111,7 @@ export default function RewardsView({ session, profile, onProfileUpdate }) {
               </div>
             </div>
             <button onClick={addReward}
-              className="w-full py-2 rounded-lg text-sm text-white bg-sky-600 hover:bg-sky-500 transition">
+              className="w-full py-2 rounded-lg text-sm btn-primary transition">
               新增
             </button>
           </div>

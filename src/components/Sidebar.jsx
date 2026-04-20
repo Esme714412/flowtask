@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 const NAV = [
@@ -17,6 +17,7 @@ const calcLevel = (xp) => Math.floor((xp || 0) / XP_PER_LEVEL) + 1
 
 export default function Sidebar({ view, setView, theme, toggleTheme, collapsed, setCollapsed, mobileOpen, session, profile }) {
   const asideRef = useRef(null)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const user = session?.user
   const lv = calcLevel(profile?.xp)
   const xpCurrent = (profile?.xp || 0) % XP_PER_LEVEL
@@ -61,20 +62,40 @@ export default function Sidebar({ view, setView, theme, toggleTheme, collapsed, 
       </div>
 
       {/* User avatar + info */}
-      <div className="flex items-center gap-2 mb-3 pb-3 px-1" style={{ borderBottom: '1px solid var(--border2)' }}>
-        {user?.user_metadata?.avatar_url
-          ? <img src={user.user_metadata.avatar_url} className="w-7 h-7 rounded-full flex-shrink-0" alt="" style={{ margin: collapsed ? 'auto' : 0 }} />
-          : <div className="w-7 h-7 rounded-full bg-violet-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-              style={{ margin: collapsed ? 'auto' : 0 }}>
-              {(user?.email?.[0] || 'U').toUpperCase()}
-            </div>}
-        {!collapsed && (
-          <div className="flex-1 min-w-0 hide-collapsed">
-            <div className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>
-              {user?.user_metadata?.full_name || user?.email}
+      <div className="relative mb-3 pb-3 px-1" style={{ borderBottom: '1px solid var(--border2)' }}>
+        <div className="flex items-center gap-2 cursor-pointer rounded-lg px-1 py-1 transition hover:opacity-80"
+          onClick={() => setUserMenuOpen(v => !v)}>
+          {user?.user_metadata?.avatar_url
+            ? <img src={user.user_metadata.avatar_url} className="w-7 h-7 rounded-full flex-shrink-0" alt="" style={{ margin: collapsed ? 'auto' : 0 }} />
+            : <div className="w-7 h-7 rounded-full bg-violet-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                style={{ margin: collapsed ? 'auto' : 0 }}>
+                {(user?.email?.[0] || 'U').toUpperCase()}
+              </div>}
+          {!collapsed && (
+            <div className="flex-1 min-w-0 hide-collapsed">
+              <div className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>
+                {user?.user_metadata?.full_name || user?.email}
+              </div>
+              <div className="text-xs text-sky-400">Lv.{lv} · {profile?.xp || 0} XP</div>
             </div>
-            <div className="text-xs text-sky-400">Lv.{lv} · {profile?.xp || 0} XP</div>
-          </div>
+          )}
+        </div>
+        {userMenuOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
+            <div className="absolute left-0 top-full z-20 rounded-xl shadow-xl py-1 min-w-36"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div className="px-4 py-2 text-xs truncate" style={{ color: 'var(--text3)' }}>
+                {user?.email}
+              </div>
+              <div style={{ borderTop: '1px solid var(--border)' }} />
+              <button onClick={() => { supabase.auth.signOut(); setUserMenuOpen(false) }}
+                className="w-full text-left px-4 py-2 text-sm transition hover:opacity-80"
+                style={{ color: '#f87171', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                登出
+              </button>
+            </div>
+          </>
         )}
       </div>
 
@@ -114,20 +135,19 @@ export default function Sidebar({ view, setView, theme, toggleTheme, collapsed, 
         )}
 
         <button onClick={toggleTheme} className="sidebar-icon-btn hide-collapsed" style={{ width: '100%', gap: 8, paddingLeft: 10, justifyContent: 'flex-start', display: collapsed ? 'none' : 'flex' }}>
-          <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+          {theme === 'dark'
+            ? <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            : <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          }
           <span className="text-xs">{theme === 'dark' ? '白色模式' : '黑色模式'}</span>
         </button>
         <button onClick={toggleTheme} className="sidebar-icon-btn" style={{ margin: 'auto', display: collapsed ? 'flex' : 'none' }}>
-          <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+          {theme === 'dark'
+            ? <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          }
         </button>
 
-        {!collapsed && (
-          <button onClick={() => supabase.auth.signOut()}
-            className="hide-collapsed text-xs py-1.5 rounded-lg transition hover:opacity-80"
-            style={{ color: 'var(--text3)', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', paddingLeft: 10 }}>
-            登出
-          </button>
-        )}
       </div>
     </aside>
   )
