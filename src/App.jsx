@@ -11,7 +11,6 @@ import CalendarView from './views/CalendarView'
 import GanttView from './views/GanttView'
 import MatrixView from './views/MatrixView'
 import WeeklyView from './views/WeeklyView'
-import PomodoroView from './views/PomodoroView'
 import RewardsView from './views/RewardsView'
 import TaskModal from './components/TaskModal'
 
@@ -22,7 +21,6 @@ const VIEW_MAP = {
   gantt:     GanttView,
   matrix:    MatrixView,
   weekly:    WeeklyView,
-  pomodoro:  PomodoroView,
   rewards:   RewardsView,
 }
 
