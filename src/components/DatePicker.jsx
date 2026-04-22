@@ -4,7 +4,10 @@ const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六']
 const MONTHS   = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
 
 function toYMD(date) {
-  return date.toISOString().split('T')[0]
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
 }
 
 export default function DatePicker({ value, onChange }) {

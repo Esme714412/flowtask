@@ -6,7 +6,7 @@ import DatePicker from './DatePicker'
 const PROJECT_COLORS = ['#38bdf8','#34d399','#a78bfa','#f472b6','#fb923c','#facc15','#94a3b8']
 
 export default function TaskModal({ task, onClose, onSaved, session }) {
-  const isEdit = !!task
+  const isEdit = !!task?.id
   const [form, setForm] = useState({
     title:      task?.title      || '',
     project_id: task?.project_id || '',

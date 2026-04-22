@@ -29,7 +29,7 @@ const VIEW_MAP = {
 export default function App() {
   const [session, setSession]             = useState(undefined)
   const [profile, setProfile]             = useState(null)
-  const [theme, setTheme]                 = useState('dark')
+  const [theme, setTheme]                 = useState('light')
   const [view, setView]                   = useState('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
@@ -69,7 +69,7 @@ export default function App() {
   }, [theme])
 
   const toggleTheme  = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
-  const openNewTask  = () => { setEditingTask(null); setTaskModalOpen(true) }
+  const openNewTask  = (date) => { setEditingTask(date ? { due_date: date } : null); setTaskModalOpen(true) }
   const openEditTask = (task) => { setEditingTask(task); setTaskModalOpen(true) }
 
   if (session === undefined) {
