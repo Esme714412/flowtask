@@ -94,7 +94,7 @@ export default function TaskList({ onNewTask, onEditTask, session, profile, onPr
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>任務清單</h1>
-        <button onClick={onNewTask}
+        <button onClick={() => onNewTask()}
           className="flex items-center gap-2 btn-primary text-sm px-4 py-2 rounded-lg transition">
           + 新增任務
         </button>
@@ -117,7 +117,7 @@ export default function TaskList({ onNewTask, onEditTask, session, profile, onPr
           <div className="text-3xl mb-2">{status === 'done' ? '🎉' : status === 'cancelled' ? '🗑️' : '📋'}</div>
           <div>{status === 'done' ? '還沒有完成的任務' : status === 'cancelled' ? '沒有取消的任務' : '沒有待辦任務'}</div>
           {status === 'todo' && (
-            <button onClick={onNewTask} className="mt-4 text-sm text-sky-400 hover:underline">新增第一個任務</button>
+            <button onClick={() => onNewTask()} className="mt-4 text-sm text-sky-400 hover:underline">新增第一個任務</button>
           )}
         </div>
       ) : (

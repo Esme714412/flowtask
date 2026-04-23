@@ -1,0 +1,26 @@
+name: Weekly Summary Generation
+
+on:
+  schedule:
+    - cron: '0 14 * * 0'   # 每週日 22:00 台灣時間 (UTC+8)
+  workflow_dispatch:         # 手動觸發（測試用）
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate weekly summaries
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/generate-weekly-summaries.js

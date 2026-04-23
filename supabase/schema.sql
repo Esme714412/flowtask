@@ -110,3 +110,18 @@ create policy "own pomodoro" on pomodoro_sessions
 -- daily stats
 create policy "own daily_stats" on daily_stats
   for all using (auth.uid() = user_id);
+
+-- ── weekly_summaries (AI 週報緩存) ─
+create table if not exists weekly_summaries (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  week_start date not null,
+  summary    jsonb not null,
+  created_at timestamptz default now(),
+  unique(user_id, week_start)
+);
+
+alter table weekly_summaries enable row level security;
+
+create policy "own weekly_summaries" on weekly_summaries
+  for all using (auth.uid() = user_id);

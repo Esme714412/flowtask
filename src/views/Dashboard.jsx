@@ -95,7 +95,7 @@ export default function Dashboard({ onNewTask, onEditTask, session, profile, onP
             今天有 <span className="text-sky-400 font-semibold">{todayTasks.length} 件</span>任務待完成
           </p>
         </div>
-        <button onClick={onNewTask}
+        <button onClick={() => onNewTask()}
           className="flex items-center gap-2 btn-primary text-sm px-4 py-2 rounded-lg transition">
           + 新增任務
         </button>
@@ -132,7 +132,7 @@ export default function Dashboard({ onNewTask, onEditTask, session, profile, onP
         <div className="card p-10 text-center" style={{ color: 'var(--text3)' }}>
           <div className="text-4xl mb-3">🎉</div>
           <div className="font-medium">沒有待辦任務！</div>
-          <button onClick={onNewTask} className="mt-4 text-sm text-sky-400 hover:underline">新增第一個任務</button>
+          <button onClick={() => onNewTask()} className="mt-4 text-sm text-sky-400 hover:underline">新增第一個任務</button>
         </div>
       ) : (
         <>

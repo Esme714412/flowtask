@@ -10,9 +10,15 @@ function toYMD(date) {
   return `${y}-${m}-${d}`
 }
 
+function parseDate(str) {
+  if (!str) return null
+  const d = new Date(str + 'T00:00:00')
+  return isNaN(d.getTime()) ? null : d
+}
+
 export default function DatePicker({ value, onChange }) {
   const today   = toYMD(new Date())
-  const initDate = value ? new Date(value + 'T00:00:00') : new Date()
+  const initDate = parseDate(value) ?? new Date()
   const [open,  setOpen]  = useState(false)
   const [year,  setYear]  = useState(initDate.getFullYear())
   const [month, setMonth] = useState(initDate.getMonth())
@@ -26,8 +32,8 @@ export default function DatePicker({ value, onChange }) {
   }, [open])
 
   useEffect(() => {
-    if (value) {
-      const d = new Date(value + 'T00:00:00')
+    const d = parseDate(value)
+    if (d) {
       setYear(d.getFullYear())
       setMonth(d.getMonth())
     }
