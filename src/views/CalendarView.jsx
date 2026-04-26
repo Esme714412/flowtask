@@ -141,56 +141,58 @@ export default function CalendarView({ onNewTask, onEditTask, session, taskVersi
     <div className="flex flex-col h-full gap-4 min-h-0">
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2">
+        {/* 第一行：標題 + 今天 + 月/週切換 */}
+        <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>日曆</h1>
-          {calMode === 'month' && (
-            <div className="flex items-center gap-1">
-              <button onClick={prevMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80" style={navBtn}>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
-              </button>
-              <span className="text-sm font-semibold min-w-20 text-center" style={{ color: 'var(--text)' }}>{year} 年 {MONTHS[month]}</span>
-              <button onClick={nextMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80" style={navBtn}>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-              </button>
+          <div className="flex items-center gap-2">
+            <button onClick={goToday} className="text-xs px-3 py-1.5 rounded-lg transition hover:opacity-80" style={navBtn}>
+              今天
+            </button>
+            <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+              {[['month','月'], ['week','週']].map(([mode, label], i) => (
+                <button key={mode} onClick={() => setCalMode(mode)}
+                  className="px-3 py-1.5 text-xs transition"
+                  style={{
+                    background: calMode === mode ? 'var(--surface)' : 'var(--bg2)',
+                    color:      calMode === mode ? 'var(--text)'    : 'var(--text3)',
+                    borderLeft: i > 0 ? '1px solid var(--border)' : 'none',
+                    fontWeight: calMode === mode ? 600 : 400,
+                  }}>
+                  {label}
+                </button>
+              ))}
             </div>
-          )}
-          {calMode === 'week' && (
-            <div className="flex items-center gap-0.5 px-1 py-1 rounded-xl" style={{ background: 'var(--bg2)', border: '1px solid var(--border)' }}>
-              <button onClick={prevMiniMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80 text-base leading-none" style={{ background: 'transparent', color: 'var(--text2)', border: 'none', cursor: 'pointer' }}>‹</button>
-              <span className="text-sm font-semibold min-w-20 text-center" style={{ color: 'var(--text)' }}>{miniYear} 年 {MONTHS[miniMonth]}</span>
-              <button onClick={nextMiniMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80 text-base leading-none" style={{ background: 'transparent', color: 'var(--text2)', border: 'none', cursor: 'pointer' }}>›</button>
-              <div style={{ width: 1, height: 14, background: 'var(--border)', margin: '0 4px' }} />
-              <button
-                onClick={() => setMiniCalOpen(o => !o)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg transition"
-                style={{ background: miniCalOpen ? '#0ea5e9' : 'transparent', color: miniCalOpen ? 'white' : 'var(--text2)', border: 'none', cursor: 'pointer' }}>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-              </button>
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={goToday} className="text-xs px-3 py-1.5 rounded-lg transition hover:opacity-80" style={navBtn}>
-            今天
-          </button>
-          <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-            {[['month','月'], ['week','週']].map(([mode, label], i) => (
-              <button key={mode} onClick={() => setCalMode(mode)}
-                className="px-3 py-1.5 text-xs transition"
-                style={{
-                  background: calMode === mode ? 'var(--surface)' : 'var(--bg2)',
-                  color:      calMode === mode ? 'var(--text)'    : 'var(--text3)',
-                  borderLeft: i > 0 ? '1px solid var(--border)' : 'none',
-                  fontWeight: calMode === mode ? 600 : 400,
-                }}>
-                {label}
-              </button>
-            ))}
           </div>
         </div>
+        {/* 第二行：月份導航 */}
+        {calMode === 'month' && (
+          <div className="flex items-center gap-1">
+            <button onClick={prevMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80" style={navBtn}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <span className="text-sm font-semibold min-w-20 text-center" style={{ color: 'var(--text)' }}>{year} 年 {MONTHS[month]}</span>
+            <button onClick={nextMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80" style={navBtn}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        )}
+        {calMode === 'week' && (
+          <div className="flex items-center gap-0.5 px-1 py-1 rounded-xl self-start" style={{ background: 'var(--bg2)', border: '1px solid var(--border)' }}>
+            <button onClick={prevMiniMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80 text-base leading-none" style={{ background: 'transparent', color: 'var(--text2)', border: 'none', cursor: 'pointer' }}>‹</button>
+            <span className="text-sm font-semibold min-w-20 text-center" style={{ color: 'var(--text)' }}>{miniYear} 年 {MONTHS[miniMonth]}</span>
+            <button onClick={nextMiniMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80 text-base leading-none" style={{ background: 'transparent', color: 'var(--text2)', border: 'none', cursor: 'pointer' }}>›</button>
+            <div style={{ width: 1, height: 14, background: 'var(--border)', margin: '0 4px' }} />
+            <button
+              onClick={() => setMiniCalOpen(o => !o)}
+              className="w-7 h-7 flex items-center justify-center rounded-lg transition"
+              style={{ background: miniCalOpen ? '#0ea5e9' : 'transparent', color: miniCalOpen ? 'white' : 'var(--text2)', border: 'none', cursor: 'pointer' }}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ══ MONTH VIEW ══ */}
@@ -407,13 +409,6 @@ export default function CalendarView({ onNewTask, onEditTask, session, taskVersi
                       )
                     })}
 
-                    {!loading && !dayTasks.length && (
-                      <div className="text-center rounded-lg cursor-pointer transition hover:opacity-70"
-                        style={{ padding: '12px 4px', fontSize: 10, color: 'var(--text3)', border: '1px dashed var(--border2)' }}
-                        onClick={() => onNewTask(dayStr)}>
-                        + 新增
-                      </div>
-                    )}
                   </div>
                 )
               })}
