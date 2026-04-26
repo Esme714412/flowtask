@@ -46,6 +46,7 @@ export default function CalendarView({ onNewTask, onEditTask, session, taskVersi
   const [weekMonday, setWeekMonday] = useState(() => getMondayOf(new Date()))
   const [miniYear,   setMiniYear]   = useState(new Date().getFullYear())
   const [miniMonth,  setMiniMonth]  = useState(new Date().getMonth())
+  const [miniCalOpen, setMiniCalOpen] = useState(true)
 
   // ── Navigation ──────────────────────────────────────────────────────────────
   const prevMonth = () => month === 0  ? (setMonth(11), setYear(y => y-1)) : setMonth(m => m-1)
@@ -154,6 +155,22 @@ export default function CalendarView({ onNewTask, onEditTask, session, taskVersi
               </button>
             </div>
           )}
+          {calMode === 'week' && (
+            <div className="flex items-center gap-0.5 px-1 py-1 rounded-xl" style={{ background: 'var(--bg2)', border: '1px solid var(--border)' }}>
+              <button onClick={prevMiniMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80 text-base leading-none" style={{ background: 'transparent', color: 'var(--text2)', border: 'none', cursor: 'pointer' }}>‹</button>
+              <span className="text-sm font-semibold min-w-20 text-center" style={{ color: 'var(--text)' }}>{miniYear} 年 {MONTHS[miniMonth]}</span>
+              <button onClick={nextMiniMonth} className="w-7 h-7 flex items-center justify-center rounded-lg transition hover:opacity-80 text-base leading-none" style={{ background: 'transparent', color: 'var(--text2)', border: 'none', cursor: 'pointer' }}>›</button>
+              <div style={{ width: 1, height: 14, background: 'var(--border)', margin: '0 4px' }} />
+              <button
+                onClick={() => setMiniCalOpen(o => !o)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg transition"
+                style={{ background: miniCalOpen ? '#0ea5e9' : 'transparent', color: miniCalOpen ? 'white' : 'var(--text2)', border: 'none', cursor: 'pointer' }}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button onClick={goToday} className="text-xs px-3 py-1.5 rounded-lg transition hover:opacity-80" style={navBtn}>
@@ -245,63 +262,50 @@ export default function CalendarView({ onNewTask, onEditTask, session, taskVersi
 
       {/* ══ WEEK VIEW ══ */}
       {calMode === 'week' && (
-        <div className="flex gap-4 flex-1 min-h-0">
+        <div className="flex flex-col gap-3 flex-1 min-h-0 md:flex-row md:gap-4">
 
-          {/* ── Left: mini calendar ── */}
-          <div style={{ width: 196, flexShrink: 0 }}>
-            <div className="card p-3">
-              <div className="flex items-center justify-between mb-2">
-                <button onClick={prevMiniMonth}
-                  className="w-6 h-6 flex items-center justify-center rounded transition hover:opacity-80 text-base leading-none"
-                  style={{ background: 'var(--bg2)', color: 'var(--text2)', border: 'none', cursor: 'pointer' }}>‹</button>
-                <span className="text-xs font-semibold" style={{ color: 'var(--text)' }}>
-                  {miniYear} 年 {MONTHS[miniMonth]}
-                </span>
-                <button onClick={nextMiniMonth}
-                  className="w-6 h-6 flex items-center justify-center rounded transition hover:opacity-80 text-base leading-none"
-                  style={{ background: 'var(--bg2)', color: 'var(--text2)', border: 'none', cursor: 'pointer' }}>›</button>
-              </div>
-
-              {/* Day headers (Sun-first) */}
+          {/* ── Mini calendar (controlled by header calendar-icon toggle) ── */}
+          {miniCalOpen && (
+          <div className="md:flex-shrink-0">
+            <div className="card p-3 md:w-[196px]">
               <div className="grid grid-cols-7 mb-1">
                 {WEEKDAYS_SUN.map(d => (
                   <div key={d} className="text-center" style={{ fontSize: 9, color: 'var(--text3)', padding: '2px 0' }}>{d}</div>
                 ))}
               </div>
-
-              {/* Week rows */}
               {miniWeeks.map((week, ri) => {
-                const firstD  = week.find(d => d !== null)
-                if (firstD == null) return null
-                const rowMon  = getMondayOf(new Date(miniYear, miniMonth, firstD))
-                const isSel   = rowMon.getTime() === weekMonday.getTime()
-                return (
-                  <div key={ri}
-                    className="grid grid-cols-7 rounded cursor-pointer"
-                    style={{ marginBottom: 2, background: isSel ? 'rgba(14,165,233,.2)' : 'transparent', transition: 'background .12s' }}
-                    onClick={() => { if (!isSel) setWeekMonday(rowMon) }}
-                    onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'rgba(14,165,233,.08)' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'rgba(14,165,233,.2)' : 'transparent' }}>
-                    {week.map((d, ci) => {
-                      const isTodayCell = d !== null && toYMD(new Date(miniYear, miniMonth, d)) === today
-                      return (
-                        <div key={ci} style={{ height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {d !== null && (
-                            isTodayCell
-                              ? <span style={{ width: 20, height: 20, background: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'white' }}>{d}</span>
-                              : <span style={{ fontSize: 10, color: isSel ? 'white' : 'var(--text2)', fontWeight: isSel ? 500 : 400 }}>{d}</span>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              })}
+                  const firstD = week.find(d => d !== null)
+                  if (firstD == null) return null
+                  const rowMon = getMondayOf(new Date(miniYear, miniMonth, firstD))
+                  const isSel  = rowMon.getTime() === weekMonday.getTime()
+                  return (
+                    <div key={ri}
+                      className="grid grid-cols-7 rounded cursor-pointer"
+                      style={{ marginBottom: 2, background: isSel ? 'rgba(14,165,233,.2)' : 'transparent', transition: 'background .12s' }}
+                      onClick={() => { if (!isSel) setWeekMonday(rowMon) }}
+                      onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'rgba(14,165,233,.08)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'rgba(14,165,233,.2)' : 'transparent' }}>
+                      {week.map((d, ci) => {
+                        const isTodayCell = d !== null && toYMD(new Date(miniYear, miniMonth, d)) === today
+                        return (
+                          <div key={ci} style={{ height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {d !== null && (
+                              isTodayCell
+                                ? <span style={{ width: 20, height: 20, background: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'white' }}>{d}</span>
+                                : <span style={{ fontSize: 10, color: isSel ? 'white' : 'var(--text2)', fontWeight: isSel ? 500 : 400 }}>{d}</span>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })}
             </div>
           </div>
+          )}
 
-          {/* ── Right: week grid ── */}
-          <div className="flex-1 flex flex-col min-w-0 gap-3">
+          {/* ── Week content ── */}
+          <div className="flex-1 flex flex-col min-w-0 gap-3 min-h-0">
             {/* Week navigation */}
             <div className="flex items-center justify-between">
               <button onClick={prevWeek} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg transition hover:opacity-80" style={navBtn}>
@@ -317,8 +321,8 @@ export default function CalendarView({ onNewTask, onEditTask, session, taskVersi
               </button>
             </div>
 
-            {/* 7-column grid */}
-            <div className="grid grid-cols-7 gap-2 flex-1 overflow-y-auto">
+            {/* Days: mobile = vertical list / desktop = 7-column grid */}
+            <div className="flex flex-col gap-3 md:grid md:grid-cols-7 md:gap-2 md:flex-1 md:overflow-y-auto">
               {weekDays.map((day, i) => {
                 const dayStr   = toYMD(day)
                 const isToday  = dayStr === today
@@ -327,19 +331,41 @@ export default function CalendarView({ onNewTask, onEditTask, session, taskVersi
 
                 return (
                   <div key={i} className="flex flex-col min-w-0">
-                    {/* Day header */}
-                    <div className="text-center py-2 px-1 rounded-lg mb-2 cursor-pointer transition hover:opacity-90"
+                    {/* Day header — mobile */}
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-2 transition md:hidden"
                       style={{
                         background: isToday ? '#0284c7' : 'var(--surface)',
                         border: `1px solid ${isToday ? '#0ea5e9' : 'var(--border)'}`,
-                      }}
-                      onClick={() => onNewTask(dayStr)}>
-                      <div style={{ fontSize: 10, color: isToday ? 'rgba(255,255,255,.75)' : 'var(--text3)' }}>
-                        {WEEKDAYS_MON[i]}
+                      }}>
+                      <div className="flex items-baseline gap-0.5">
+                        <span style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2, color: isToday ? 'white' : 'var(--text)' }}>
+                          {day.getDate()}
+                        </span>
+                        <span style={{ fontSize: 11, color: isToday ? 'rgba(255,255,255,.75)' : 'var(--text3)' }}>
+                          （{WEEKDAYS_MON[i]}）
+                        </span>
                       </div>
-                      <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.2, color: isToday ? 'white' : 'var(--text)' }}>
-                        {day.getDate()}
+                      <div className="ml-auto" style={{ fontSize: 10, color: isToday ? 'rgba(255,255,255,.6)' : dayTasks.length ? 'var(--text3)' : 'transparent' }}>
+                        {dayTasks.length ? `${doneCnt}/${dayTasks.length} 完成` : ''}
                       </div>
+                      <button
+                        className="w-6 h-6 flex items-center justify-center rounded flex-shrink-0 transition hover:opacity-70"
+                        style={{ background: isToday ? 'rgba(255,255,255,.2)' : 'var(--bg2)', color: isToday ? 'white' : 'var(--text2)', border: 'none', cursor: 'pointer', fontSize: 18 }}
+                        onClick={() => onNewTask(dayStr)}>+</button>
+                    </div>
+
+                    {/* Day header — desktop */}
+                    <div className="hidden md:flex md:flex-col md:text-center relative py-2 px-1 rounded-lg mb-2 transition hover:opacity-90"
+                      style={{
+                        background: isToday ? '#0284c7' : 'var(--surface)',
+                        border: `1px solid ${isToday ? '#0ea5e9' : 'var(--border)'}`,
+                      }}>
+                      <button
+                        className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded transition hover:opacity-70"
+                        style={{ background: isToday ? 'rgba(255,255,255,.2)' : 'var(--bg2)', color: isToday ? 'white' : 'var(--text2)', border: 'none', cursor: 'pointer', fontSize: 14 }}
+                        onClick={() => onNewTask(dayStr)}>+</button>
+                      <div style={{ fontSize: 10, color: isToday ? 'rgba(255,255,255,.75)' : 'var(--text3)' }}>{WEEKDAYS_MON[i]}</div>
+                      <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.2, color: isToday ? 'white' : 'var(--text)' }}>{day.getDate()}</div>
                       <div style={{ fontSize: 9, marginTop: 2, color: isToday ? 'rgba(255,255,255,.6)' : dayTasks.length ? 'var(--text3)' : 'transparent' }}>
                         {dayTasks.length ? `${doneCnt}/${dayTasks.length} 完成` : '—'}
                       </div>
@@ -383,7 +409,7 @@ export default function CalendarView({ onNewTask, onEditTask, session, taskVersi
 
                     {!loading && !dayTasks.length && (
                       <div className="text-center rounded-lg cursor-pointer transition hover:opacity-70"
-                        style={{ padding: '16px 4px', fontSize: 10, color: 'var(--text3)', border: '1px dashed var(--border2)' }}
+                        style={{ padding: '12px 4px', fontSize: 10, color: 'var(--text3)', border: '1px dashed var(--border2)' }}
                         onClick={() => onNewTask(dayStr)}>
                         + 新增
                       </div>
